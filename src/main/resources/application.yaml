@@ -1,0 +1,77 @@
+server:
+  port: 8084
+  tomcat:
+    accesslog:
+      enabled: true
+      directory: "log"
+      prefix: access_log
+      buffered: false
+      suffix: .log
+      file-date-format: .yyyy-MM-dd
+      pattern: common
+
+spring:
+  datasource:
+    username: root
+    password: skillbox
+    url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        #format_sql: true
+    hibernate:
+      ddl-auto: update
+    #show-sql: true
+
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: debug
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: trace
+
+indexing-settings:
+  user-agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0
+  referrer: https://www.google.com
+  messages:
+    indexing_launched: Индексация уже запущена
+    indexing_not_launched: Индексация не запущена
+    indexing_unknown_url: Адрес не найден
+    indexing_unexpected_error: Неожиданная ошибка
+    indexing_stopped_by_user: Индексация остановлена пользователем
+    indexing_url_parse_error: Ошибка разбора ссылок на странице
+    indexing_read_timeout_error: Веб-сайт не ответил за отведенное время
+    url_empty: Адрес страницы не передан
+    url_out_of_range: Данная страница находится за пределами сайтов, указанных в конфигурационном файле
+    search_query_empty: Не задан запрос для поиска
+    search_site_not_found: Переданный адрес веб-сайта не найден
+    search_offset_not_number: Сдвиг должен быть числом
+    search_limit_not_number: Количество возвращаемых результатов должно быть числом
+    search_unexpected_error: Во время поиска произошла неожиданная ошибка
+  sites:
+    - url: https://skillbox.ru/
+      name: Skillbox
+    - url: https://www.playback.ru/
+      name: PlayBack.Ru
+    - url: https://dombulgakova.ru/
+      name: Булгаковский дом
+    - url: https://1001sekret.ru/
+      name: 1001 Секрет – Полезные советы и важные секреты
+    - url: http://ugorau.ru/
+      name: Угораю.ру — Самые угарные приколы сети!
+    - url: https://sekreti-domovodstva.ru/
+      name: Секреты домоводства
+    - url: https://camcebekulinar.ru/
+      name: Сам себе кулинар
+    - url: https://silaznaniya8.ru/
+      name: Сила знания
+    - url: https://vkusnogotovlu.ru/
+      name: Вкусно готовлю
+    - url: http://cimus.biz
+      name: Цимус
+    - url: https://exotic-zoo.ru
+      name: Магазин экзотических животных  Купить экзотических животных из питомника с документами
