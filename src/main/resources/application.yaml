@@ -16,6 +16,7 @@ spring:
     password: skillbox
     url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
   jpa:
+    open-in-view: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
@@ -47,11 +48,12 @@ indexing-settings:
     indexing_read_timeout_error: Веб-сайт не ответил за отведенное время
     url_empty: Адрес страницы не передан
     url_out_of_range: Данная страница находится за пределами сайтов, указанных в конфигурационном файле
-    search_query_empty: Не задан запрос для поиска
+    search_query_empty: Запрос для поиска не задан
     search_site_not_found: Переданный адрес веб-сайта не найден
-    search_offset_not_number: Сдвиг должен быть числом
-    search_limit_not_number: Количество возвращаемых результатов должно быть числом
     search_unexpected_error: Во время поиска произошла неожиданная ошибка
+    search_number_positive: Значение поля %s должно быть положительным целым числом, большим либо равным нулю
+    search_unknown_message_key: Неизвестный ключ сообщения об ошибке
+    search_message_key_not_set: Поле %s, ключ сообщения об ошибке не задан
   sites:
     - url: https://skillbox.ru/
       name: Skillbox

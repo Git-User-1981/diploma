@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import searchengine.config.Config;
 import searchengine.config.ConfigSite;
 import searchengine.dto.search.SearchData;
+import searchengine.dto.search.SearchRequest;
 import searchengine.dto.search.SearchResponse;
 import searchengine.exceptions.ApiCallException;
 import searchengine.model.Index;
@@ -51,34 +52,15 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public SearchResponse search(String query, String siteUrl, String inputOffset, String inputLimit) {
-        if (query.isBlank()) {
-            throw new ApiCallException(messages.get("search_query_empty"));
-        }
+    public SearchResponse search(SearchRequest req) {
 
-        if (!siteUrl.isBlank() && !checkSiteInConfig(siteUrl)) {
+        if (!req.getSite().isBlank() && !checkSiteInConfig(req.getSite())) {
             throw new ApiCallException(messages.get("search_site_not_found"));
-        }
-
-        final int offset;
-        try {
-            offset = Integer.parseInt(inputOffset);
-        }
-        catch (NumberFormatException e) {
-            throw new ApiCallException(messages.get("search_offset_not_number"));
-        }
-
-        final int limit;
-        try {
-            limit = Integer.parseInt(inputLimit);
-        }
-        catch (NumberFormatException e) {
-            throw new ApiCallException(messages.get("search_limit_not_number"));
         }
 
         List<String> originalLemmas;
         try {
-            originalLemmas = MorphologyAnalyzer.getInstance().getLemmaList(query);
+            originalLemmas = MorphologyAnalyzer.getInstance().getLemmaList(req.getQuery());
         }
         catch (IOException e) {
             String errorText = e.getMessage() + System.lineSeparator() +
@@ -89,7 +71,7 @@ public class SearchServiceImpl implements SearchService {
             throw new ApiCallException(messages.get("search_unexpected_error"));
         }
 
-        final List<Integer> sitesId = getListSiteIdByUrl(siteUrl);
+        final List<Integer> sitesId = getListSiteIdByUrl(req.getSite());
 
         List<String> filteredLemmas = lemmaRepository.filterLemmasOverLimit(
             originalLemmas,
@@ -119,15 +101,7 @@ public class SearchServiceImpl implements SearchService {
             indices.sort((o1, o2) -> Double.compare(o2.getRank(), o1.getRank()));
 
             searchResponse.setCount(indices.size());
-            searchResponse.setData(buildResult(indices, offset, limit, originalLemmas));
-            //searchResponse.setData(buildResult(indices, offset, limit, filteredLemmas));
-
-
-            System.out.println("originalLemmas");
-            originalLemmas.forEach(System.out::println);
-            System.out.println("filteredLemmas");
-            filteredLemmas.forEach(System.out::println);
-            System.out.println("Total: " + indices.size());
+            searchResponse.setData(buildResult(indices, req.getOffset(), req.getLimit(), originalLemmas));
         }
 
         return searchResponse;
@@ -175,8 +149,6 @@ public class SearchServiceImpl implements SearchService {
                 searchData.setRelevance(index.getRank());
 
                 Document pageContent = Jsoup.parse(index.getPage().getContent());
-
-                System.out.println(pageContent.title());
 
                 searchData.setTitle(pageContent.title());
                 searchData.setSnippet(createSnippet(pageContent.select("body").text(), lemmas));
