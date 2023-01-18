@@ -100,18 +100,25 @@ public class SiteParse extends RecursiveAction {
                     .execute();
 
                 if (response.statusCode() == 200) {
-                    Page page = pageAdd(response.statusCode(), response.body());
-                    createPageIndex(page);
+                    String contentType = response.contentType();
+                    if (contentType != null && contentType.startsWith("text/html")) {
+                        Page page = pageAdd(response.statusCode(), response.body());
+                        createPageIndex(page);
 
-                    if (type == ParseType.FULL) {
-                        final ArrayList<SiteParse> children = new ArrayList<>();
-                        response.parse().select("body a[href]").forEach(a -> {
-                            String childUrl = clearURI(a.absUrl("href"));
-                            if (isCorrectUrl(childUrl)) {
-                                children.add(new SiteParse(childUrl, site, requestedUrlQueue));
-                            }
-                        });
-                        SiteParse.invokeAll(children);
+                        if (type == ParseType.FULL) {
+                            final ArrayList<SiteParse> children = new ArrayList<>();
+                            response.parse().select("body a[href]").forEach(a -> {
+                                String childUrl = clearURI(a.absUrl("href"));
+                                if (isCorrectUrl(childUrl)) {
+                                    children.add(new SiteParse(childUrl, site, requestedUrlQueue));
+                                }
+                            });
+                            SiteParse.invokeAll(children);
+                        }
+                    }
+                    else {
+                        pageAdd(response.statusCode(), response.statusMessage());
+                        saveError(500, messages.get("indexing_wrong_content_type") + ": " + contentType);
                     }
                 }
                 else {
