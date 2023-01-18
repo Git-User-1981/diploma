@@ -35,7 +35,7 @@ spring:
 #            sql:
 #              BasicBinder: trace
 
-indexing-settings:
+settings:
   user-agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0
   referrer: https://www.google.com
   messages:
@@ -50,6 +50,7 @@ indexing-settings:
     url_out_of_range: Данная страница находится за пределами сайтов, указанных в конфигурационном файле
     search_query_empty: Запрос для поиска не задан
     search_site_not_found: Переданный адрес веб-сайта не найден
+    search_site_bad_url: Неверный формат адреса веб-сайта
     search_unexpected_error: Во время поиска произошла неожиданная ошибка
     search_number_positive: Значение поля %s должно быть положительным целым числом, большим либо равным нулю
     search_unknown_message_key: Неизвестный ключ сообщения об ошибке

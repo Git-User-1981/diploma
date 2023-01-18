@@ -11,7 +11,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "indexing-settings")
+@ConfigurationProperties(prefix = "settings")
 public class Config {
     private List<ConfigSite> sites;
     private String userAgent;
