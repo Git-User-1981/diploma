@@ -1,9 +1,9 @@
 package searchengine.services.indexing;
 
 import lombok.Getter;
-//import lombok.extern.log4j.Log4j2;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
+@Slf4j
 @RequiredArgsConstructor
 public class SiteParse extends RecursiveAction {
     @Getter
@@ -89,7 +90,7 @@ public class SiteParse extends RecursiveAction {
                 }
 
                 requestedUrlQueue.add(url);
-                System.out.println("Обработка адреса: " + url);
+                log.info("Обработка адреса: " + url);
 
                 Connection.Response response = Jsoup.connect(url)
                     .userAgent(userAgent)
@@ -121,11 +122,11 @@ public class SiteParse extends RecursiveAction {
                     if (type == ParseType.STOPPING) {
                         site.setStatus(StatusType.FAILED);
                         site.setLastError(messages.get("indexing_stopped_by_user"));
-                        System.out.println("Прервали индексирование: " + url);
+                        log.error("Прервали индексирование: " + url);
                     }
                     else {
                         site.setStatus(StatusType.INDEXED);
-                        System.out.println("Закончили индексирование: " + url);
+                        log.info("Закончили индексирование: " + url);
                     }
                     requestedUrlQueue.clear();
                 }
@@ -182,7 +183,7 @@ public class SiteParse extends RecursiveAction {
 
     private boolean isCorrectUrl(String url) {
         Pattern patternRoot = Pattern.compile("^" + site.getUrl());
-        Pattern patternFile = Pattern.compile("([^\\s]+(\\.(?i)(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|mp4))$)");
+        Pattern patternFile = Pattern.compile("([^\\s]+(\\.(?i)(zip|jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|mp4))$)");
         Pattern patternAnchor = Pattern.compile("#([\\w\\-]+)?$");
 
         return (patternRoot.matcher(url).find()
@@ -250,6 +251,6 @@ public class SiteParse extends RecursiveAction {
 
         pageAdd(errorCode, errorText);
 
-        System.out.println(url + " " + errorCode + " " + errorText);
+        log.error(url + " " + errorCode + " " + errorText);
     }
 }

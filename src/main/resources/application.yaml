@@ -3,14 +3,19 @@ server:
   tomcat:
     accesslog:
       enabled: true
-      directory: "log"
-      prefix: access_log
+      directory: /
+      prefix: access
       buffered: false
       suffix: .log
       file-date-format: .yyyy-MM-dd
       pattern: common
+      rotate: true
+      rename-on-rotate: true
+    basedir: logs/
 
 spring:
+  application:
+    name: Search Engine
   datasource:
     username: root
     password: skillbox
@@ -25,7 +30,9 @@ spring:
       ddl-auto: update
     #show-sql: true
 
-#logging:
+logging:
+  file:
+    name: logs/search-engine.log
 #  level:
 #    org:
 #      hibernate:

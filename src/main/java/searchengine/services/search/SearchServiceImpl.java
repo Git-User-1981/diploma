@@ -1,5 +1,6 @@
 package searchengine.services.search;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class SearchServiceImpl implements SearchService {
     private final List<ConfigSite> configSites;
@@ -67,7 +69,7 @@ public class SearchServiceImpl implements SearchService {
                     Arrays.stream(e.getStackTrace())
                             .map(StackTraceElement::toString)
                             .collect(Collectors.joining(System.lineSeparator()));
-            System.out.println("Ошибка при получении лемм: " + System.lineSeparator() + errorText);
+            log.error("Ошибка при получении лемм: " + System.lineSeparator() + errorText);
             throw new ApiCallException(messages.get("search_unexpected_error"));
         }
 
@@ -195,7 +197,7 @@ public class SearchServiceImpl implements SearchService {
                 Arrays.stream(e.getStackTrace())
                     .map(StackTraceElement::toString)
                     .collect(Collectors.joining(System.lineSeparator()));
-            System.out.println("Ошибка при получении лемм для превью: " + System.lineSeparator() + errorText);
+            log.error("Ошибка при получении лемм для превью: " + System.lineSeparator() + errorText);
             throw new ApiCallException(messages.get("search_unexpected_error"));
         }
         return snippet;
