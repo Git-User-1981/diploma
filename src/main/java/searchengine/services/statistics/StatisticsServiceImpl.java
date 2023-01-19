@@ -52,14 +52,12 @@ public class StatisticsServiceImpl implements StatisticsService {
 
                 int pagesCount = pageRepository.countAllBySite(site);
                 int lemmasCount = lemmaRepository.countAllBySite(site);
-                String lastErrorText = site.getLastError();
 
                 item.setPages(pagesCount);
                 item.setLemmas(lemmasCount);
                 item.setStatus(site.getStatus().name());
-                item.setError(lastErrorText == null ? "-" : lastErrorText);
                 item.setStatusTime(site.getStatusTime().getTime());
-
+                item.setError(site.getLastError());
                 total.setPages(total.getPages() + pagesCount);
                 total.setLemmas(total.getLemmas() + lemmasCount);
             }

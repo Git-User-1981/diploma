@@ -33,6 +33,8 @@ spring:
 logging:
   file:
     name: logs/search-engine.log
+  charset:
+    file: UTF-8
 #  level:
 #    org:
 #      hibernate:
