@@ -277,7 +277,7 @@ Java Spring Boot Framework, JPA, JSOUP, MySQL, Morphology Library Lucene
 </table>
 
 
-## Логирование
+### Логирование
 
 В процессе работы поисковой системы выполняется логирование.
 Папка с логами располагается рядом с исполняемым файлом *SearchEngine.jar* в папке `logs`.
