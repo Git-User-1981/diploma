@@ -65,7 +65,6 @@ public class StatisticsServiceImpl implements StatisticsService {
                 item.setPages(0);
                 item.setLemmas(0);
                 item.setStatus("");
-                item.setError("-");
                 item.setStatusTime(new Date().getTime());
             }
 

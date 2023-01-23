@@ -1,11 +1,15 @@
 package searchengine.model;
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.SQLInsert;
 
 import javax.persistence.*;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @org.hibernate.annotations.Table(appliesTo = "lemma", comment = "Леммы, встречающиеся в текстах")
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_site_lemma", columnNames = {"site_id", "lemma"}))
@@ -22,6 +26,7 @@ public class Lemma {
         foreignKey = @ForeignKey(name = "fk_lemma_site", foreignKeyDefinition = "FOREIGN KEY (site_id) REFERENCES SITE(ID) ON DELETE CASCADE"),
         columnDefinition = "INT NOT NULL COMMENT 'ID веб-сайта из таблицы site'"
     )
+    @ToString.Exclude
     private Site site;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL COMMENT 'Нормальная форма слова (лемма)'")
@@ -29,4 +34,20 @@ public class Lemma {
 
     @Column(columnDefinition = "INT NOT NULL COMMENT 'Количество страниц, на которых слово встречается хотя бы один раз'")
     private Integer frequency;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lemma that = (Lemma) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(frequency, that.frequency) &&
+                site.equals(that.site) &&
+                lemma.equals(that.lemma);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, site, lemma, frequency);
+    }
 }

@@ -1,11 +1,15 @@
 package searchengine.model;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @org.hibernate.annotations.Table(appliesTo = "site", comment = "Информация о сайтах и статусах их индексации")
 public class Site {
@@ -29,4 +33,22 @@ public class Site {
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL COMMENT 'Имя сайта'")
     private String name;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Site that = (Site) o;
+        return Objects.equals(id, that.id) &&
+                status == that.status &&
+                statusTime.equals(that.statusTime) &&
+                Objects.equals(lastError, that.lastError) &&
+                url.equals(that.url) &&
+                name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, status, statusTime, lastError, url, name);
+    }
 }

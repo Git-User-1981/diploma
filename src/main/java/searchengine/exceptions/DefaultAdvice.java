@@ -20,12 +20,12 @@ public class DefaultAdvice {
 
     @ExceptionHandler(ApiCallException.class)
     public ResponseEntity<ErrorResponse> handleException(ApiCallException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.ok().body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleException(RuntimeException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.ok().body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(BindException.class)
@@ -52,6 +52,6 @@ public class DefaultAdvice {
             errorMessage = String.format(messages.get(errMsgKey), fieldError.getField());
         }
 
-        return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
+        return ResponseEntity.ok().body(new ErrorResponse(errorMessage));
     }
 }

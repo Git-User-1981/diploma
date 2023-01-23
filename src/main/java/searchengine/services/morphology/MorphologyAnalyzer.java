@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class MorphologyAnalyzer {
@@ -91,7 +92,7 @@ public class MorphologyAnalyzer {
         return normalForms;
     }
 
-    public HashMap<String, Integer> getLemmaListWithCount(String text) {
+    public Map<String, Integer> getLemmaListWithCount(String text) {
         final HashMap<String, Integer> lemmas = new HashMap<>();
 
         for (String word : textToWordsArray(text)) {

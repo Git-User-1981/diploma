@@ -90,7 +90,7 @@ public class SiteParse extends RecursiveAction {
                 }
 
                 requestedUrlQueue.add(url);
-                log.info("Обработка адреса: " + url);
+                log.info((isRoot ? "Запущено индексирование: " : "Обработка адреса: ") + url);
 
                 Connection.Response response = Jsoup.connect(url)
                     .userAgent(userAgent)
@@ -117,7 +117,6 @@ public class SiteParse extends RecursiveAction {
                         }
                     }
                     else {
-                        pageAdd(response.statusCode(), response.statusMessage());
                         saveError(500, messages.get("indexing_wrong_content_type") + ": " + contentType);
                     }
                 }
@@ -127,13 +126,11 @@ public class SiteParse extends RecursiveAction {
 
                 if (isRoot) {
                     if (type == ParseType.STOPPING) {
-                        site.setStatus(StatusType.FAILED);
-                        site.setLastError(messages.get("indexing_stopped_by_user"));
-                        log.error("Прервали индексирование: " + url);
+                        userInterruptIndexing();
                     }
                     else {
                         site.setStatus(StatusType.INDEXED);
-                        log.info("Закончили индексирование: " + url);
+                        log.info("Индексирование завершено: " + url);
                     }
                     requestedUrlQueue.clear();
                 }
@@ -169,6 +166,9 @@ public class SiteParse extends RecursiveAction {
                 );
             }
         }
+        else if (type == ParseType.STOPPING && isRoot) {
+            userInterruptIndexing();
+        }
 
         site.setStatusTime(new Date());
         siteRepository.save(site);
@@ -190,7 +190,7 @@ public class SiteParse extends RecursiveAction {
 
     private boolean isCorrectUrl(String url) {
         Pattern patternRoot = Pattern.compile("^" + site.getUrl());
-        Pattern patternFile = Pattern.compile("([^\\s]+(\\.(?i)(zip|jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|mp4))$)");
+        Pattern patternFile = Pattern.compile("(\\S+(\\.(?i)(zip|jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|mp4))$)");
         Pattern patternAnchor = Pattern.compile("#([\\w\\-]+)?$");
 
         return (patternRoot.matcher(url).find()
@@ -212,7 +212,7 @@ public class SiteParse extends RecursiveAction {
 
     private void createPageIndex(Page page) throws IOException {
         String text = Jsoup.parse(page.getContent()).select("title,body").text();
-        HashMap<String, Integer> lemmas = MorphologyAnalyzer.getInstance().getLemmaListWithCount(text);
+        Map<String, Integer> lemmas = MorphologyAnalyzer.getInstance().getLemmaListWithCount(text);
 
         final Set<Lemma> lemmasList = new HashSet<>();
         final Set<Index> indicesList = new HashSet<>();
@@ -259,5 +259,11 @@ public class SiteParse extends RecursiveAction {
         pageAdd(errorCode, errorText);
 
         log.error(url + " " + errorCode + " " + errorText);
+    }
+
+    private void userInterruptIndexing() {
+        site.setStatus(StatusType.FAILED);
+        site.setLastError(messages.get("indexing_stopped_by_user"));
+        log.warn("Прервали индексирование: " + url);
     }
 }

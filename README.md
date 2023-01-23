@@ -15,7 +15,7 @@ Java Spring Boot Framework, JPA, JSOUP, MySQL, Morphology Library Lucene
    * Java, версии не ниже 17
 2. В СУБД MySQL необходимо создать:
    * Пользователя `root` с паролем `skillbox`
-   * Схему `search_engine`
+   * Схему `search_engine`, указав charset/collation `utf8` и `utf8_bin` соответственно
 
 
 ### Запуск поисковой системы

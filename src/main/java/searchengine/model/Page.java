@@ -1,11 +1,15 @@
 package searchengine.model;
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.SQLInsert;
 
 import javax.persistence.*;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @org.hibernate.annotations.Table(appliesTo = "page", comment = "Проиндексированные страницы сайта")
 @SQLInsert(sql = "insert into page (code, content, path, site_id) values (?, ?, ?, ?) on duplicate key update code = code")
@@ -21,6 +25,7 @@ public class Page {
         foreignKey = @ForeignKey(name = "fk_page_site", foreignKeyDefinition = "FOREIGN KEY (site_id) REFERENCES SITE(ID) ON DELETE CASCADE"),
         columnDefinition = "INT NOT NULL COMMENT 'ID веб-сайта из таблицы site'"
     )
+    @ToString.Exclude
     private Site site;
 
     @Column(columnDefinition = "TEXT NOT NULL COMMENT 'Адрес страницы от корня сайта', UNIQUE KEY uk_site_path(site_id,path(1000))")
@@ -31,4 +36,21 @@ public class Page {
 
     @Column(columnDefinition = "MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'HTML-код страницы'")
     private String content;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Page that = (Page) o;
+        return Objects.equals(id, that.id) &&
+                site.equals(that.site) &&
+                path.equals(that.path) &&
+                Objects.equals(code, that.code) &&
+                content.equals(that.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, site, path, code, content);
+    }
 }
