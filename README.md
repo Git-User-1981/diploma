@@ -116,7 +116,7 @@ Java Spring Boot Framework, JPA, JSOUP, MySQL, Morphology Library Lucene
             "name": "Skillbox",
             "status": "INDEXED",
             "statusTime": 1673562160790,
-            "error": "Ключ не передается, если ошибок нет",
+            "error": "При наличии ошибки",
             "pages": 7919,
             "lemmas": 101556
          }
@@ -253,8 +253,8 @@ Java Spring Boot Framework, JPA, JSOUP, MySQL, Morphology Library Lucene
          "site": "https://www.site.com",
          "siteName": "Имя сайта",
          "uri": "/path/to/page/6784",
-         "title": "Заголовок страницы, которую выводим",
-         "snippet": "Фрагмент текста, в котором найдены совпадения",
+         "title": "Заголовок страницы",
+         "snippet": "Фрагмент с совпадениями",
          "relevance": 0.93362
       }
    ]
