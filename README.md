@@ -11,11 +11,11 @@ Java Spring Boot Framework, JPA, JSOUP, MySQL, Morphology Library Lucene
 
 ### Требования
 1. Для работы поисковой системы необходимо установить:
-   * Сервер баз данных MySQL, версии не ниже 8
-   * Java, версии не ниже 17
+   * Сервер баз данных MySQL, версии не ниже 8;
+   * Java, версии не ниже 17;
 2. В СУБД MySQL необходимо создать:
-   * Пользователя `root` с паролем `skillbox`
-   * Схему `search_engine`, указав charset/collation `utf8` и `utf8_bin` соответственно
+   * Пользователя `root` с паролем `skillbox`;
+   * Схему `search_engine`, указав charset/collation `utf8` и `utf8_bin` соответственно;
 
 
 ### Запуск поисковой системы
@@ -74,7 +74,7 @@ Java Spring Boot Framework, JPA, JSOUP, MySQL, Morphology Library Lucene
 
 ### Спецификация API
 
-Вызов API доступен по адресу `http://172.18.2.86:8084/api`
+Вызов API доступен по адресу `http://localhost:8084/api`
 
 <table>
 <thead>
