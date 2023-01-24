@@ -90,7 +90,7 @@ public class SiteParse extends RecursiveAction {
                 }
 
                 requestedUrlQueue.add(url);
-                log.info((isRoot ? "Запущено индексирование: " : "Обработка адреса: ") + url);
+                log.info(messages.get(isRoot ? "indexing_start" : "indexing_processing") + ": " + url);
 
                 Connection.Response response = Jsoup.connect(url)
                     .userAgent(userAgent)
@@ -99,30 +99,7 @@ public class SiteParse extends RecursiveAction {
                     .followRedirects(true)
                     .execute();
 
-                if (response.statusCode() == 200) {
-                    String contentType = response.contentType();
-                    if (contentType != null && contentType.startsWith("text/html")) {
-                        Page page = pageAdd(response.statusCode(), response.body());
-                        createPageIndex(page);
-
-                        if (type == ParseType.FULL) {
-                            final ArrayList<SiteParse> children = new ArrayList<>();
-                            response.parse().select("body a[href]").forEach(a -> {
-                                String childUrl = clearURI(a.absUrl("href"));
-                                if (isCorrectUrl(childUrl)) {
-                                    children.add(new SiteParse(childUrl, site, requestedUrlQueue));
-                                }
-                            });
-                            SiteParse.invokeAll(children);
-                        }
-                    }
-                    else {
-                        saveError(500, messages.get("indexing_wrong_content_type") + ": " + contentType);
-                    }
-                }
-                else {
-                    pageAdd(response.statusCode(), response.statusMessage());
-                }
+                parseResponse(response);
 
                 if (isRoot) {
                     if (type == ParseType.STOPPING) {
@@ -130,7 +107,7 @@ public class SiteParse extends RecursiveAction {
                     }
                     else {
                         site.setStatus(StatusType.INDEXED);
-                        log.info("Индексирование завершено: " + url);
+                        log.info(messages.get("indexing_complete") + ": " + url);
                     }
                     requestedUrlQueue.clear();
                 }
@@ -147,19 +124,11 @@ public class SiteParse extends RecursiveAction {
             catch (SocketTimeoutException e) {
                 saveError(504, messages.get("indexing_read_timeout_error"));
             }
-            catch (IOException e) {
-                saveError(
-                    500,
-                    messages.get("indexing_url_parse_error") + ": " + e.getMessage(),
-                    Arrays.stream(e.getStackTrace())
-                        .map(StackTraceElement::toString)
-                        .collect(Collectors.joining(System.lineSeparator()))
-                );
-            }
             catch (Exception e) {
+                String msgKey = e instanceof IOException ? "indexing_url_parse_error" : "indexing_unexpected_error";
                 saveError(
                     500,
-                    messages.get("indexing_unexpected_error") + ": " + e.getMessage(),
+                    messages.get(msgKey) + ": " + e.getMessage(),
                     Arrays.stream(e.getStackTrace())
                         .map(StackTraceElement::toString)
                         .collect(Collectors.joining(System.lineSeparator()))
@@ -197,6 +166,33 @@ public class SiteParse extends RecursiveAction {
             && !patternFile.matcher(url).find()
             && !patternAnchor.matcher(url).find()
             && !urlExists(url));
+    }
+
+    private void parseResponse(Connection.Response response) throws Exception {
+        if (response.statusCode() == 200) {
+            String contentType = response.contentType();
+            if (contentType != null && contentType.startsWith("text/html")) {
+                Page page = pageAdd(response.statusCode(), response.body());
+                createPageIndex(page);
+
+                if (type == ParseType.FULL) {
+                    final List<SiteParse> children = new ArrayList<>();
+                    response.parse().select("body a[href]").forEach(a -> {
+                        String childUrl = clearURI(a.absUrl("href"));
+                        if (isCorrectUrl(childUrl)) {
+                            children.add(new SiteParse(childUrl, site, requestedUrlQueue));
+                        }
+                    });
+                    SiteParse.invokeAll(children);
+                }
+            }
+            else {
+                saveError(500, messages.get("indexing_wrong_content_type") + ": " + contentType);
+            }
+        }
+        else {
+            pageAdd(response.statusCode(), response.statusMessage());
+        }
     }
 
     private synchronized Page pageAdd(Integer statusCode, String content) {
@@ -264,6 +260,6 @@ public class SiteParse extends RecursiveAction {
     private void userInterruptIndexing() {
         site.setStatus(StatusType.FAILED);
         site.setLastError(messages.get("indexing_stopped_by_user"));
-        log.warn("Прервали индексирование: " + url);
+        log.warn(messages.get("indexing_interrupt") + ": " + url);
     }
 }

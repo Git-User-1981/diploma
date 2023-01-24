@@ -56,7 +56,7 @@ public class IndexingServiceImpl implements IndexingService {
         SiteParse.setType(ParseType.FULL);
         ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         pool.submit(() -> {
-            final ArrayList<SiteParse> threads = new ArrayList<>();
+            final List<SiteParse> threads = new ArrayList<>();
             for (ConfigSite configSite : configSites) {
                 siteRepository.findByUrl(configSite.getUrl()).ifPresent(siteRepository::delete);
 

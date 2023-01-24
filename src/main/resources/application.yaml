@@ -48,6 +48,10 @@ settings:
   user-agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0
   referrer: https://www.google.com
   messages:
+    indexing_start: Запущено индексирование
+    indexing_processing: Обработка адреса
+    indexing_complete: Индексирование завершено
+    indexing_interrupt: Прервали индексирование
     indexing_launched: Индексация уже запущена
     indexing_not_launched: Индексация не запущена
     indexing_unknown_url: Адрес не найден
