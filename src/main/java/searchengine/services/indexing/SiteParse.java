@@ -19,6 +19,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ import static java.lang.Thread.sleep;
 public class SiteParse extends RecursiveAction {
     @Getter
     private String url;
-    private Boolean isRoot;
+    private boolean isRoot;
     private final Site site;
     private static SiteRepository siteRepository;
     private static PageRepository pageRepository;
@@ -39,7 +40,7 @@ public class SiteParse extends RecursiveAction {
     private static String userAgent;
     private static String referrer;
     private static Map<String, String> messages;
-    private CopyOnWriteArrayList<String> requestedUrlQueue;
+    private List<String> requestedUrlQueue;
 
     @Setter
     @Getter
@@ -63,7 +64,7 @@ public class SiteParse extends RecursiveAction {
         SiteParse.messages = messages;
     }
 
-    public SiteParse(String url, Site site, Boolean isRoot) {
+    public SiteParse(String url, Site site, boolean isRoot) {
         this.url = url;
         this.site = site;
         this.isRoot = isRoot;
@@ -72,7 +73,7 @@ public class SiteParse extends RecursiveAction {
         }
     }
 
-    public SiteParse(String url, Site site, CopyOnWriteArrayList<String> requestedUrlQueue) {
+    public SiteParse(String url, Site site, List<String> requestedUrlQueue) {
         this(url, site, false);
         this.requestedUrlQueue = requestedUrlQueue;
     }
@@ -143,14 +144,18 @@ public class SiteParse extends RecursiveAction {
         siteRepository.save(site);
     }
 
-    private void sleepRandom() throws InterruptedException {
-        sleep( (long) (Math.random() * 50) + 100);
+    private void sleepRandom() {
+        try {
+            sleep( (long) (Math.random() * 50) + 100);
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private String clearURI(String url) {
         return url.replaceAll("\\?.+","")
-                  .replaceAll("#.+", "")
-                  .replaceAll("/$", "");
+                  .replaceAll("#.+", "");
     }
 
     private boolean urlExists(String url) {
@@ -159,7 +164,7 @@ public class SiteParse extends RecursiveAction {
 
     private boolean isCorrectUrl(String url) {
         Pattern patternRoot = Pattern.compile("^" + site.getUrl());
-        Pattern patternFile = Pattern.compile("(\\S+(\\.(?i)(zip|jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|mp4))$)");
+        Pattern patternFile = Pattern.compile("(\\S+(\\.(?i)(eps|zip|jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|mp4))$)");
         Pattern patternAnchor = Pattern.compile("#([\\w\\-]+)?$");
 
         return (patternRoot.matcher(url).find()
@@ -168,7 +173,7 @@ public class SiteParse extends RecursiveAction {
             && !urlExists(url));
     }
 
-    private void parseResponse(Connection.Response response) throws Exception {
+    private void parseResponse(Connection.Response response) throws IOException {
         if (response.statusCode() == 200) {
             String contentType = response.contentType();
             if (contentType != null && contentType.startsWith("text/html")) {
@@ -183,7 +188,7 @@ public class SiteParse extends RecursiveAction {
                             children.add(new SiteParse(childUrl, site, requestedUrlQueue));
                         }
                     });
-                    SiteParse.invokeAll(children);
+                    ForkJoinTask.invokeAll(children);
                 }
             }
             else {

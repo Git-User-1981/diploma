@@ -15,6 +15,7 @@ import searchengine.repositories.SiteRepository;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinTask;
 
 @Service
 public class IndexingServiceImpl implements IndexingService {
@@ -69,7 +70,7 @@ public class IndexingServiceImpl implements IndexingService {
 
                 threads.add(new SiteParse(site.getUrl(), site, true));
             }
-            SiteParse.invokeAll(threads);
+            ForkJoinTask.invokeAll(threads);
             SiteParse.setType(ParseType.READY);
         });
         pool.shutdown();
@@ -121,7 +122,7 @@ public class IndexingServiceImpl implements IndexingService {
         ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final Site finalSite = site;
         pool.submit(() -> {
-            SiteParse.invokeAll(new SiteParse(url, finalSite, true));
+            ForkJoinTask.invokeAll(new SiteParse(url, finalSite, true));
             SiteParse.setType(ParseType.READY);
         });
         pool.shutdown();

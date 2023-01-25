@@ -41,7 +41,7 @@ public class DefaultAdvice {
             if (errMsgKey == null) {
                 errMsgKey = "search_message_key_not_set";
             }
-            else if (errMsgKey.indexOf("NumberFormatException") > 0) {
+            else if (errMsgKey.contains("NumberFormatException")) {
                 errMsgKey = "search_number_positive";
             }
 

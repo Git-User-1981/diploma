@@ -90,7 +90,7 @@ public class SearchServiceImpl implements SearchService {
                     indices = indexRepository.findAllByLemmaAndSitesId(lemma, sitesId);
                 }
                 else {
-                    List<Integer> pagesId = indices.stream().map(Index::getPageId).collect(Collectors.toList());
+                    List<Integer> pagesId = indices.stream().map(Index::getPageId).toList();
                     indices = indicesMerge(
                         indexRepository.findAllByLemmaAndSitesIdAndPagesId(lemma, sitesId, pagesId),
                         indices
@@ -203,15 +203,13 @@ public class SearchServiceImpl implements SearchService {
         return snippet;
     }
 
-    private Boolean wordExists(String word, List<String> searchLemmas) throws IOException {
-        Boolean result = false;
+    private boolean wordExists(String word, List<String> searchLemmas) throws IOException {
+        boolean result = false;
         MorphologyAnalyzer morphInstance = MorphologyAnalyzer.getInstance();
         List<String> wordLemmas = morphInstance.wordToLemma(word.toLowerCase());
-        if (wordLemmas != null) {
-            for (String wordLemma : wordLemmas) {
-                if (wordLemma != null && searchLemmas.contains(wordLemma)) {
-                    return true;
-                }
+        for (String wordLemma : wordLemmas) {
+            if (wordLemma != null && searchLemmas.contains(wordLemma)) {
+                return true;
             }
         }
         return result;

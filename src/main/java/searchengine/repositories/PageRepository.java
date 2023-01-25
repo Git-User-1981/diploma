@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface PageRepository extends JpaRepository<Page, Long> {
     Optional<Page> findByPathAndSite(String path, Site site);
-    Boolean existsByPathAndSite(String path, Site site);
+    boolean existsByPathAndSite(String path, Site site);
     Integer countAllBySite(Site site);
 }

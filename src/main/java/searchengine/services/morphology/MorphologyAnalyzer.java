@@ -6,10 +6,7 @@ import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class MorphologyAnalyzer {
@@ -70,36 +67,33 @@ public class MorphologyAnalyzer {
 
     public List<String> wordToLemma(String word) {
         if (word.isBlank()) {
-            return null;
+            return Collections.emptyList();
         }
 
         LuceneMorphology luceneMorphology = getMorphologyByWord(word);
 
         if (luceneMorphology == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<String> wordBaseForms = luceneMorphology.getMorphInfo(word);
         if (wordBaseForms.stream().anyMatch(this::isParticle)) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<String> normalForms = luceneMorphology.getNormalForms(word);
         if (normalForms.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
         return normalForms;
     }
 
     public Map<String, Integer> getLemmaListWithCount(String text) {
-        final HashMap<String, Integer> lemmas = new HashMap<>();
+        final Map<String, Integer> lemmas = new HashMap<>();
 
         for (String word : textToWordsArray(text)) {
-            List<String> normalWords = wordToLemma(word);
-            if (normalWords != null) {
-                normalWords.forEach(nm -> lemmas.put(nm, lemmas.getOrDefault(nm, 0) + 1));
-            }
+            wordToLemma(word).forEach(nm -> lemmas.put(nm, lemmas.getOrDefault(nm, 0) + 1));
         }
 
         return lemmas;
@@ -109,14 +103,11 @@ public class MorphologyAnalyzer {
         final List<String> lemmas = new ArrayList<>();
 
         for (String word : textToWordsArray(text)) {
-            List<String> normalWords = wordToLemma(word);
-            if (normalWords != null) {
-                normalWords.forEach(normalWord -> {
-                    if (normalWord != null && !lemmas.contains(normalWord)) {
-                        lemmas.add(normalWord);
-                    }
-                });
-            }
+            wordToLemma(word).forEach(normalWord -> {
+                if (normalWord != null && !lemmas.contains(normalWord)) {
+                    lemmas.add(normalWord);
+                }
+            });
         }
 
         return lemmas;
