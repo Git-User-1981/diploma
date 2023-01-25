@@ -32,7 +32,7 @@ public class SiteParse extends RecursiveAction {
     @Getter
     private String url;
     private boolean isRoot;
-    private final Site site;
+    private final transient Site site;
     private static SiteRepository siteRepository;
     private static PageRepository pageRepository;
     private static LemmaRepository lemmaRepository;
