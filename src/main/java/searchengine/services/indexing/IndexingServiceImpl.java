@@ -1,5 +1,6 @@
 package searchengine.services.indexing;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import searchengine.config.ConfigSite;
 import searchengine.config.Config;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinTask;
 
+@Slf4j
 @Service
 public class IndexingServiceImpl implements IndexingService {
     private final List<ConfigSite> configSites;
@@ -59,7 +61,10 @@ public class IndexingServiceImpl implements IndexingService {
         pool.submit(() -> {
             final List<SiteParse> threads = new ArrayList<>();
             for (ConfigSite configSite : configSites) {
-                siteRepository.findByUrl(configSite.getUrl()).ifPresent(siteRepository::delete);
+                siteRepository.findByUrl(configSite.getUrl()).ifPresent(site -> {
+                    log.info(messages.get("indexing_clear_site") + ": " + site.getUrl());
+                    siteRepository.delete(site);
+                });
 
                 Site site = new Site();
                 site.setUrl(configSite.getUrl());

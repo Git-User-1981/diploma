@@ -1528,6 +1528,8 @@ var API = function(){
             address: '/search',
             type: 'get',
             action: function(result, $this, data){
+                $('form[data-send="search"] .btn').attr('disabled', false);
+                $('button[data-send="search"]').attr('disabled', false);
                 if (result.result){
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').remove();
@@ -1744,6 +1746,8 @@ var API = function(){
                             data = {url: $page.val()};
                             break;
                         case 'search':
+                            $('form[data-send="search"] .btn').attr('disabled', true);
+                            $('button[data-send="search"]').attr('disabled', true);
                             if ($this.data('sendtype')==='next') {
                                 data = {
                                     site: $this.data('searchsite'),
