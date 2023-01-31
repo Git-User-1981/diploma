@@ -8,7 +8,7 @@ import searchengine.model.Index;
 import java.util.List;
 
 @Repository
-public interface IndexRepository extends JpaRepository<Index, Long> {
+public interface IndexRepository extends JpaRepository<Index, Integer> {
     @Query(
         value = "select i.* " +
                   "from `index` i " +

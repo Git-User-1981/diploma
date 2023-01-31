@@ -11,7 +11,7 @@ import searchengine.model.Site;
 import java.util.List;
 
 @Repository
-public interface LemmaRepository extends JpaRepository<Lemma, Long> {
+public interface LemmaRepository extends JpaRepository<Lemma, Integer> {
     Integer countAllBySite(Site site);
     @Modifying
     @Transactional

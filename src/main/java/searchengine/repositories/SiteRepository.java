@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SiteRepository extends JpaRepository<Site, Long> {
+public interface SiteRepository extends JpaRepository<Site, Integer> {
     Optional<Site> findByUrl(String url);
     @Query(value = "select id from site where url in (?1)", nativeQuery = true)
     List<Integer> findAllIdByUrls(List<String> urls);
