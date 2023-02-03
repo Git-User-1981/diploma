@@ -1,6 +1,7 @@
 package searchengine.model;
 
 import lombok.*;
+import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -10,7 +11,14 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Entity
-@Table(name = "`index`", uniqueConstraints = {@UniqueConstraint(name = "uk_page_lemma", columnNames = {"page_id", "lemma_id"})})
+@Table(
+    name = "`index`",
+    uniqueConstraints = {@UniqueConstraint(name = "uk_page_lemma", columnNames = {"page_id", "lemma_id"})},
+    indexes = {
+        @javax.persistence.Index(name = "fk_index_page_idx", columnList = "page_id"),
+        @javax.persistence.Index(name = "fk_index_lemma_idx", columnList = "lemma_id")
+    }
+)
 @org.hibernate.annotations.Table(appliesTo = "`index`", comment = "Поисковый индекс")
 public class Index {
     @Id
@@ -22,8 +30,9 @@ public class Index {
         name = "lemma_id",
         referencedColumnName="id",
         foreignKey = @ForeignKey(name = "fk_index_lemma", foreignKeyDefinition = "FOREIGN KEY (lemma_id) REFERENCES LEMMA(ID) ON DELETE CASCADE"),
-        columnDefinition = "INT NOT NULL COMMENT 'Идентификатор леммы'"
+        nullable = false
     )
+    @Comment("Идентификатор леммы")
     @ToString.Exclude
     private Lemma lemma;
 
@@ -32,15 +41,17 @@ public class Index {
         name = "page_id",
         referencedColumnName="id",
         foreignKey = @ForeignKey(name = "fk_index_page", foreignKeyDefinition = "FOREIGN KEY (page_id) REFERENCES PAGE(ID) ON DELETE CASCADE"),
-        columnDefinition = "INT NOT NULL COMMENT 'Идентификатор страницы'"
+        nullable = false
     )
+    @Comment("Идентификатор страницы")
     @ToString.Exclude
     private Page page;
 
     @Column(name = "page_id", insertable = false, updatable = false)
     private Integer pageId;
 
-    @Column(name = "`rank`", columnDefinition = "FLOAT NOT NULL COMMENT 'Количество данной леммы для данной страницы'")
+    @Column(name = "`rank`", nullable = false)
+    @Comment("Количество данной леммы для данной страницы")
     private float rank;
 
     @Override

@@ -1,6 +1,7 @@
 package searchengine.model;
 
 import lombok.*;
+import org.hibernate.annotations.Comment;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Entity
+@Table(name = "site", uniqueConstraints = {@UniqueConstraint(name = "uk_url", columnNames = "url")})
 @org.hibernate.annotations.Table(appliesTo = "site", comment = "Информация о сайтах и статусах их индексации")
 public class Site {
     @Id
@@ -18,20 +20,24 @@ public class Site {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('INDEXING', 'INDEXED', 'FAILED') NOT NULL" +
-            " COMMENT 'Текущий статус полной индексации сайта, отражающий готовность поискового движка осуществлять поиск по сайту'")
+    @Column(columnDefinition = "ENUM('INDEXING', 'INDEXED', 'FAILED')", nullable = false)
+    @Comment("Текущий статус полной индексации сайта, отражающий готовность поискового движка осуществлять поиск по сайту")
     private StatusType status;
 
-    @Column(columnDefinition = "DATETIME(6) NOT NULL COMMENT 'Дата и время статуса'")
+    @Column(columnDefinition = "DATETIME(6)", nullable = false)
+    @Comment("Дата и время статуса")
     private Date statusTime;
 
-    @Column(columnDefinition = "TEXT COMMENT 'Текст ошибки индексации или NULL, если её не было'")
+    @Column(columnDefinition = "TEXT")
+    @Comment("Текст ошибки индексации или NULL, если её не было")
     private String lastError;
 
-    @Column(columnDefinition = "VARCHAR(255) NOT NULL COMMENT 'Адрес главной страницы сайта', UNIQUE KEY uk_url(url)")
+    @Column(nullable = false)
+    @Comment("Адрес главной страницы сайта")
     private String url;
 
-    @Column(columnDefinition = "VARCHAR(255) NOT NULL COMMENT 'Имя сайта'")
+    @Column(nullable = false)
+    @Comment("Имя сайта")
     private String name;
 
     @Override
