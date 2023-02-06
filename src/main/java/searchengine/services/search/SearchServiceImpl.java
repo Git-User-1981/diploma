@@ -78,7 +78,7 @@ public class SearchServiceImpl implements SearchService {
         List<String> filteredLemmas = lemmaRepository.filterLemmasOverLimit(
             originalLemmas,
             sitesId,
-            originalLemmas.size() > 1 ? 0.6 : 1
+            originalLemmas.size() > 1 ? 0.6 : 1.01
         );
 
         SearchResponse searchResponse = new SearchResponse();

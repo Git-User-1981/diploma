@@ -91,7 +91,7 @@ settings:
       name: Вкусно готовлю
     - url: https://www.dextra.ru/
       name: Интернет-агентство Dextra
-    - url: http://cimus.biz/
-      name: Цимус
     - url: https://www.svetlovka.ru/
       name: Центральная городская молодежная библиотека им. М. А. Светлова
+    - url: http://cimus.biz/
+      name: Цимус

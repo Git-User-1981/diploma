@@ -77,6 +77,7 @@ public class IndexingServiceImpl implements IndexingService {
             }
             ForkJoinTask.invokeAll(threads);
             SiteParse.setType(ParseType.READY);
+            log.info(messages.get("indexing_complete"));
         });
         pool.shutdown();
 
